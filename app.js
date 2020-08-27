@@ -47,6 +47,8 @@ function mainMenu(person, people) {
       break;
     case "descendants":
       // TODO: get person's descendants
+      let descendants = findDescendants(person[0], people);
+      alert(person[0].firstName + "'s children: " + descendants);
       break;
     case "restart":
       app(people); // restart
@@ -138,38 +140,38 @@ function findFamily(person, people) {
 }
 
 function findSiblings(person, people) {
-  if(person.parents.length === 0){
+  if (person.parents.length === 0) {
     return "None";
   }
-  let siblings = people.filter( function(el) {
-    if(el.parents.toString() === person.parents.toString() && el.id !== person.id) {
+  let siblings = people.filter(function (el) {
+    if (el.parents.toString() === person.parents.toString() && el.id !== person.id) {
       return true;
     }
     else {
       return false;
     }
   });
-  return siblings.map(function(person) {
+  return siblings.map(function (person) {
     return person.firstName + " " + person.lastName;
   });
 }
 
 function findChildren(person, people) {
-  let children = people.filter( function(el) {
-    if(el.parents.includes(person.id)) {
+  let children = people.filter(function (el) {
+    if (el.parents.includes(person.id)) {
       return true;
     }
     else {
       return false;
     }
   });
-  return children.map(function(person) {
+  return children.map(function (person) {
     return person.firstName + " " + person.lastName;
   });
 }
 
 function findPeopleById(personsIdArray, people) {
-  if(personsIdArray.length === 0){
+  if (personsIdArray.length === 0) {
     return "None";
   }
   let personNames = personsIdArray.map(function (el) {
@@ -179,9 +181,86 @@ function findPeopleById(personsIdArray, people) {
 }
 
 function findPersonById(personId, people) {
-  if(personId === null) {
+  if (personId === null) {
     return "None";
   }
   let person = searchById(personId, people);
   return person.firstName + " " + person.lastName;
 }
+
+
+function findDescendants(person, people, parent="") {
+  let children = findChildrenObject(person, people);
+
+  if(children.length === 0) {
+    return "None";
+  }
+
+  return children.map(function(el){
+    return el.firstName + " " + el.lastName + " Children: " + findDescendants(el, people) + "\n";
+  }).reduce(function(total, el) { //Reduce used to remove comma seperated values
+    return total += el;
+  });
+}
+
+function findChildrenObject(person, people) {
+  let children = people.filter(function (el) {
+    if (el.parents.includes(person.id)) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  });
+  return children;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// function findChildrenPerson(person, people) {
+//   person.children = people.filter(function (el) {
+//     if (el.parents.includes(person.id)) {
+//       return true;
+//     }
+//     else {
+//       return false;
+//     }
+//   });
+//   person.children.forEach(function (item, index) {
+//     return findChildrenPerson(item, people)
+//   });
+
+//   if (person.children.length === 0) {
+//     return "";
+//   }
+//   else {
+//     return person.firstName + " " + person.lastName + "children: " + person.children.map(function (el) {
+//       return el.firstName + " " + el.lastName + ", ";
+//     });
+//   }
+// }
