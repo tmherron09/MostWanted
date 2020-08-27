@@ -33,11 +33,14 @@ function mainMenu(person, people){
     return app(people); // restart
   }
 
-  let displayOption = prompt("Found " + person.firstName + " " + person.lastName + " . Do you want to know their 'info', 'family', or 'descendants'? Type the option you want or 'restart' or 'quit'");
+  let displayOption = prompt("Found " + person[0].firstName + " " + person[0].lastName + " . Do you want to know their 'info', 'family', or 'descendants'? Type the option you want or 'restart' or 'quit'");
+
+  
 
   switch(displayOption){
     case "info":
     // TODO: get person's info
+    displayPerson(person[0]);
     break;
     case "family":
     // TODO: get person's family
@@ -53,6 +56,7 @@ function mainMenu(person, people){
     default:
     return mainMenu(person, people); // ask again
   }
+
 }
 
 function searchByName(people){
@@ -83,6 +87,13 @@ function displayPerson(person){
   // height, weight, age, name, occupation, eye color.
   let personInfo = "First Name: " + person.firstName + "\n";
   personInfo += "Last Name: " + person.lastName + "\n";
+  personInfo += "Gender: " + person.gender + "\n";
+  personInfo += "DoB: " + person.dob + "\n";
+  personInfo += "Height: " + person.height + "\"" + "\n";
+  personInfo += "Weight: " + person.weight + "lbs" + "\n";
+  personInfo += "Eye Color: " + person.eyeColor + "\n";
+  personInfo += "Occupation: " + person.occupation + "\n";
+  // TODO Add Family Names, parents, etc
   // TODO: finish getting the rest of the information to display
   alert(personInfo);
 }
@@ -103,4 +114,8 @@ function yesNo(input){
 // helper function to pass in as default promptFor validation
 function chars(input){
   return true; // default validation only
+}
+
+function searchById(id, people) {
+
 }
