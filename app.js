@@ -131,14 +131,16 @@ function searchById(id, people) {
 
 function findFamily(person, people) {
   let family = "Parents: " + findPeopleById(person.parents, people).toString() + "\n";
-  //let children = findChildren(person, people);
   family += "Siblings: " + findSiblings(person, people).toString() + "\n";
-  //family += "Children: " + findPeopleById(children, people).toString() + "\n";
+  family += "Children: " + findChildren(person, people).toString() + "\n";
   family += "Spouse: " + findPersonById(person.currentSpouse, people) + "\n";
   return family;
 }
 
 function findSiblings(person, people) {
+  if(person.parents.length === 0){
+    return "None";
+  }
   let siblings = people.filter( function(el) {
     if(el.parents.toString() === person.parents.toString() && el.id !== person.id) {
       return true;
@@ -153,11 +155,23 @@ function findSiblings(person, people) {
 }
 
 function findChildren(person, people) {
-
-
+  let children = people.filter( function(el) {
+    if(el.parents.includes(person.id)) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  });
+  return children.map(function(person) {
+    return person.firstName + " " + person.lastName;
+  });
 }
 
 function findPeopleById(personsIdArray, people) {
+  if(personsIdArray.length === 0){
+    return "None";
+  }
   let personNames = personsIdArray.map(function (el) {
     return findPersonById(el, people);
   });
