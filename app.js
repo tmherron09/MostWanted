@@ -39,11 +39,13 @@ function mainMenu(person, people){
 
   switch(displayOption){
     case "info":
-    // TODO: get person's info
     displayPerson(person[0]);
     break;
     case "family":
-    // TODO: get person's family
+    let family = "parents: " + findParents(person[0].parents, people).toString() + "\n";
+    //family += "siblings" + 
+    // 
+    alert(family);
     break;
     case "descendants":
     // TODO: get person's descendants
@@ -117,5 +119,23 @@ function chars(input){
 }
 
 function searchById(id, people) {
+  let foundParent = people.filter(function(person){
+    if(person.id === id){
+      return true;
+    }
+    else{
+      return false;
+    }
+  });
+  return foundParent[0].firstName + " " + foundParent[0].lastName;
+}
+
+function findParents(parentsArray, people){
+
+  let parentNames = parentsArray.map(function(el){
+    return searchById(el, people);
+  });
+  
+  return parentNames;
 
 }
