@@ -53,7 +53,7 @@ function mainMenu(person, people) {
       break;
     case "restart":
       app(people); // restart
-      break;
+      return; //
     case "quit":
       return; // stop execution
     default:
@@ -136,6 +136,7 @@ function findFamily(person, people) {
   let family = "Parents: " + findPeopleById(person.parents, people).toString() + "\n";
   family += "Siblings: " + findSiblings(person, people).toString() + "\n";
   family += "Children: " + findChildren(person, people).toString() + "\n";
+  family += "Stepchildren: " + findStepchildren(person, people).toString() + "\n";
   family += "Spouse: " + findPersonById(person.currentSpouse, people) + "\n";
   return family;
 }
@@ -144,22 +145,48 @@ function findSiblings(person, people) {
   if (person.parents.length === 0) {
     return "None";
   }
+
   let siblings = people.filter(function (el) {
-    if (el.parents.toString() === person.parents.toString() && el.id !== person.id) {
+    if ((el.parents[0] === person.parents[0] ||
+         el.parents[0] === person.parents[1] ||
+         el.parents[1] === person.parents[0] ||
+         el.parents[1] === person.parents[1]) &&
+         el.id !== person.id) {
+      
       return true;
     }
     else {
       return false;
     }
   });
+
+  siblings.splice(0, siblings.length, ...(new Set(siblings)));
+
   return siblings.map(function (person) {
     return person.firstName + " " + person.lastName;
   });
 }
 
+// el.parents.toString() === person.parents.toString() && el.id !== person.id
+
 function findChildren(person, people) {
   let children = people.filter(function (el) {
     if (el.parents.includes(person.id)) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  });
+  return children.map(function (person) {
+    return person.firstName + " " + person.lastName;
+  });
+  
+}
+
+function findStepchildren(person, people) {
+  let children = people.filter(function (el) {
+    if (el.parents.includes(person.currentSpouse)) {
       return true;
     }
     else {
