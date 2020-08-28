@@ -9,23 +9,17 @@ function app(people) {
   let searchResults;
   switch (searchType) {
     case 'yes':
-      searchResults = searchByName(people);
+      searchResults = searchByName(people)[0];
       break;
     case 'no':
       // searchResults = searchByTraits(people);
       searchResults = searchByTrait(people);
-      if(searchResults === null) {
-        prompt("Search results have been exhausted. No Results found.")
-        return app(people); // restart
-      }
-      break;
-      // TODO: search by traits
+      break
     default:
-      app(people); // restart app --- Is this recurssion? 
+      app(people); // restart app
       break;
   }
 
-  
 
 
   // Call the mainMenu function ONLY after you find the SINGLE person you are looking for
@@ -42,22 +36,20 @@ function mainMenu(person, people) {
     return app(people); // restart
   }
 
-  let displayOption = prompt("Found " + person[0].firstName + " " + person[0].lastName + " . Do you want to know their 'info', 'family', or 'descendants'? Type the option you want or 'restart' or 'quit'");
-
-
+  let displayOption = prompt("Found " + person.firstName + " " + person.lastName + " . Do you want to know their 'info', 'family', or 'descendants'? Type the option you want or 'restart' or 'quit'");
 
   switch (displayOption) {
     case "info":
-      displayPerson(person[0]);
+      displayPerson(person);
       break;
     case "family":
-      let family = findFamily(person[0], people);
+      let family = findFamily(person, people);
       alert(family);
       break;
     case "descendants":
       // TODO: get person's descendants
-      let descendants = findDescendants(person[0], people);
-      alert(person[0].firstName + "'s children: " + descendants);
+      let descendants = findDescendants(person, people);
+      alert(person.firstName + "'s children: \n" + descendants);
       break;
     case "restart":
       app(people); // restart
@@ -67,7 +59,7 @@ function mainMenu(person, people) {
     default:
       return mainMenu(person, people); // ask again
   }
-
+  mainMenu(person, people)
 }
 
 function searchByName(people) {
@@ -202,11 +194,11 @@ function findDescendants(person, people, parent="") {
   let children = findChildrenObject(person, people);
 
   if(children.length === 0) {
-    return "None";
+    return "";
   }
 
   return children.map(function(el){
-    return el.firstName + " " + el.lastName + " Children: " + findDescendants(el, people) + "\n";
+    return " ---> " + el.firstName + " " + el.lastName + findDescendants(el, people) + "\n";
   }).reduce(function(total, el) { //Reduce used to remove comma seperated values
     return total += el;
   });
@@ -258,7 +250,6 @@ function searchByTrait(people) {
       case "5":
     case "eye color":
     case "eyecolor":
-    case "eyeColor":
       specificTrait = "eyeColor";
       promptText = "eye color";
 
@@ -269,8 +260,9 @@ function searchByTrait(people) {
       promptText = "occupation";
       break
       case "7":
-    case "search": 
-      return choosePerson(people);
+      case "search":
+      case "display results":
+      return numberedListOfPeople(people);
     default:
       searchByTrait(people); // ask again
   }
@@ -283,9 +275,6 @@ function searchByTrait(people) {
   return searchByTrait(newPeople);
 }
 
-
-
-
 function searchBySpecificTrait(trait, prompt, people){
   if(trait === "age") {
     people = people.map(function(el, index) {
@@ -293,14 +282,43 @@ function searchBySpecificTrait(trait, prompt, people){
       el.age = Math.floor(parseFloat(Date.now() - date) / (1000*60*60*24*365.25));
       return el;
     });
+    var filter = parseInt(promptFor("enter the " + prompt + " of the person.", chars));
   }
-  let filter = promptFor("enter the " + prompt + " of the person.", chars)
+  else {
+  var filter = promptFor("enter the " + prompt + " of the person.", chars)
+  }
   return people.filter(function (el) {
-    if (el[trait] === parseInt(filter)) {
+    if (el[trait] === filter) {
       return true;
     }
     else {
       return false;
     }
   });
+}
+
+function numberedListOfPeople(people) {
+  let count = 0;
+  let input = promptForInRange( "Please input number of individual:\n" + people.map(function (person) {
+    count += 1;
+    return count + ") " + person.firstName + " " + person.lastName;
+  }).join("\n").toString(), people.length, checkInRange);
+
+  return people[input-1]
+
+}
+
+function promptForInRange(question, upperLimit, valid) {
+  do {
+    var response = parseInt(prompt(question).trim());
+  } while (!response || !valid(response, upperLimit));
+  return response;
+}
+
+function checkInRange(response, upperLimit) {
+  if(response >= 1 && response <= upperLimit) {
+    return true;
+  }
+  return false;
+
 }
