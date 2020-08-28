@@ -12,12 +12,21 @@ function app(people) {
       searchResults = searchByName(people);
       break;
     case 'no':
-      // TODO: search by traits
+      // searchResults = searchByTraits(people);
+      searchResults = searchByTrait(people);
+      if(searchResults === null) {
+        prompt("Search results have been exhausted. No Results found.")
+        return app(people); // restart
+      }
       break;
+      // TODO: search by traits
     default:
-      app(people); // restart app
+      app(people); // restart app --- Is this recurssion? 
       break;
   }
+
+  
+
 
   // Call the mainMenu function ONLY after you find the SINGLE person you are looking for
   mainMenu(searchResults, people);
@@ -216,51 +225,82 @@ function findChildrenObject(person, people) {
 }
 
 
+function searchByTrait(people) {
+  let menuSelection = promptFor("Do you want to search for\n1)'gender'\n2)'age'\n3)'height'\n4)'weight'\n5)'eye color'\n6)'occupation'\n7)'display results'.", chars).toLowerCase();
+  let specificTrait;
+  let promptText;
+
+  switch (menuSelection) {
+    case "1":
+    case "gender":
+      specificTrait = "gender";
+      promptText = "gender";
+      
+    break;
+    case "2":
+    case "age":
+      specificTrait = "age";
+      promptText = "age";
+
+      break;
+      case "3":
+    case "height":
+      specificTrait = "height";
+      promptText = "height";
+      
+      break;
+      case "4":
+    case "weight":
+      specificTrait = "weight";
+      promptText = "weight";
+      
+      break;
+      case "5":
+    case "eye color":
+    case "eyecolor":
+    case "eyeColor":
+      specificTrait = "eyeColor";
+      promptText = "eye color";
+
+      break; 
+      case "6":
+    case "occupation":
+      specificTrait = "occupation";
+      promptText = "occupation";
+      break
+      case "7":
+    case "search": 
+      return choosePerson(people);
+    default:
+      searchByTrait(people); // ask again
+  }
+
+  let newPeople = searchBySpecificTrait(specificTrait, promptText, people);
+  if(newPeople.length === 0) {
+    return null;
+  }
+
+  return searchByTrait(newPeople);
+}
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// function findChildrenPerson(person, people) {
-//   person.children = people.filter(function (el) {
-//     if (el.parents.includes(person.id)) {
-//       return true;
-//     }
-//     else {
-//       return false;
-//     }
-//   });
-//   person.children.forEach(function (item, index) {
-//     return findChildrenPerson(item, people)
-//   });
-
-//   if (person.children.length === 0) {
-//     return "";
-//   }
-//   else {
-//     return person.firstName + " " + person.lastName + "children: " + person.children.map(function (el) {
-//       return el.firstName + " " + el.lastName + ", ";
-//     });
-//   }
-// }
+function searchBySpecificTrait(trait, prompt, people){
+  if(trait === "age") {
+    people = people.map(function(el, index) {
+      let date = new Date(el.dob);
+      el.age = Math.floor(parseFloat(Date.now() - date) / (1000*60*60*24*365.25));
+      return el;
+    });
+  }
+  let filter = promptFor("enter the " + prompt + " of the person.", chars)
+  return people.filter(function (el) {
+    if (el[trait] === parseInt(filter)) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  });
+}
